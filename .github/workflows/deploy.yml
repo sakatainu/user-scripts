@@ -13,12 +13,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Busting (update version)
+        id: cache_busting
         run: |
           for script in $(git diff --name-only HEAD~1 HEAD | grep '\.user\.js$'); do
-            sed -i "s/@version      [0-9.]*/@version      $(date +'%Y%m%d%H%M%S')/" $script
+            if [ -f "$script" ]; then
+              sed -i "s/@version      [0-9.]*/@version      $(date +'%Y%m%d%H%M%S')/" $script
+            fi
           done
+          git diff --exit-code || echo "changes"
 
       - name: Commit & Push Changes
+        if: steps.cache_busting.outputs.changes == 'changes'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
