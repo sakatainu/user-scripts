@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         勤怠データをCSV出力
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  勤怠・工数のデータをCSVとして出力する
 // @author       You
 // @match        https://kintai.miteras.jp/PXT_PTCS/work-condition*
@@ -29,8 +29,9 @@
     const match = dateString.match(/(\d{2})\((.)\)/); // 例: "03(月)" → "03"
     if (!match) return '';
     const day = match[1];
-    const year = new Date().getFullYear(); // 今年を取得
-    const month = document.querySelector('#summary-view-current-date')?.getAttribute('data-month-first-date') || '01'; // 月を取得
+    const dateElement = document.querySelector('#summary-view-current-date');
+    const yearMonth = dateElement?.getAttribute('data-date') || '1970/01'; // 年月を取得
+    const [year, month] = yearMonth.split('/'); // 年と月に分割
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   }
 
