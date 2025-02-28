@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         勤怠データをCSV出力
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  勤怠・工数のデータをCSVとして出力する
 // @author       You
 // @match        https://kintai.miteras.jp/PXT_PTCS/work-condition*
