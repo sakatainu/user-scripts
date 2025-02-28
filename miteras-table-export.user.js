@@ -10,84 +10,89 @@
 // @downloadURL  https://github.com/sakatainu/user-scripts/raw/refs/heads/main/miteras-table-export.user.js
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    // CSVのダウンロード関数
-    function downloadCSV(csvContent, filename) {
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+  // CSVのダウンロード関数
+  function downloadCSV(csvContent, filename) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // 日付を yyyy-mm-dd 形式に変換する関数
+  function formatDate(dateString) {
+    const match = dateString.match(/(\d{2})\((.)\)/); // 例: "03(月)" → "03"
+    if (!match) return '';
+    const day = match[1];
+    const year = new Date().getFullYear(); // 今年を取得
+    const month = document.querySelector('#summary-view-current-date')?.getAttribute('data-month-first-date') || '01'; // 月を取得
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  // 勤務時間を空白にする処理
+  function formatTime(time) {
+    return time === '--:--' || time === '00:00' ? '' : time;
+  }
+
+  // テーブルデータをCSV形式に変換
+  function tableToCSV() {
+    let rows = document.querySelectorAll('#attendance-table-body table tr'); // 勤怠テーブルの行を取得
+    let csvContent = [];
+
+    // 指定のヘッダー
+    let headers = ['日付', '出勤', '勤務開始時間', '勤務終了時間', '休憩時間', '勤務合計'];
+    csvContent.push(headers.join(','));
+
+    // 各行のデータを取得
+    rows.forEach((row) => {
+      let cols = row.querySelectorAll('td');
+
+      if (cols.length > 0) {
+        let rowData = [];
+        rowData.push(formatDate(cols[1]?.innerText.trim() || '')); // 日付
+        rowData.push(formatTime(cols[7]?.innerText.trim() || '')); // 出勤
+        rowData.push(formatTime(cols[9]?.innerText.trim() || '')); // 勤務開始時間
+        rowData.push(formatTime(cols[10]?.innerText.trim() || '')); // 勤務終了時間
+        rowData.push(formatTime(cols[12]?.innerText.trim() || '')); // 休憩時間
+        rowData.push(formatTime(cols[16]?.innerText.trim() || '')); // 勤務合計
+
+        csvContent.push(rowData.join(','));
+      }
+    });
+
+    return csvContent.join('\n');
+  }
+
+  // CSVダウンロードボタンを追加
+  function addDownloadButton() {
+    let button = document.createElement('button');
+    button.innerText = 'CSV出力';
+    button.style.margin = '10px';
+    button.style.padding = '5px 10px';
+    button.style.fontSize = '14px';
+    button.style.cursor = 'pointer';
+
+    button.onclick = function () {
+      let csvData = tableToCSV();
+      if (csvData) {
+        downloadCSV(csvData, 'kintai_data.csv');
+      } else {
+        alert('勤怠データが見つかりませんでした。');
+      }
+    };
+
+    // ボタンをページのアクションボックスに追加
+    let actionBox = document.querySelector('.actionBox__RightBox');
+    if (actionBox) {
+      actionBox.appendChild(button);
     }
+  }
 
-    // テーブルデータをCSV形式に変換
-    function tableToCSV() {
-        let rows = document.querySelectorAll("#attendance-table-body table tr"); // 勤怠テーブルの行を取得
-        let csvContent = [];
-
-        // ヘッダーを取得
-        let headers = [
-            "日付", "勤務種別", "シフト", "承認状況", "出社", "退社", 
-            "勤務開始", "勤務終了", "休憩", "残業", "控除", "勤務合計", "出社状況"
-        ];
-        csvContent.push(headers.join(","));
-
-        // 各行のデータを取得
-        rows.forEach(row => {
-            let cols = row.querySelectorAll("td");
-
-            if (cols.length > 0) {
-                let rowData = [];
-                rowData.push(cols[1]?.innerText.trim() || "");  // 日付
-                rowData.push(cols[2]?.innerText.trim() || "");  // 勤務種別
-                rowData.push(cols[3]?.innerText.trim() || "");  // シフト
-                rowData.push(cols[4]?.innerText.trim() || "");  // 承認状況
-                rowData.push(cols[7]?.innerText.trim() || "");  // 出社時間
-                rowData.push(cols[8]?.innerText.trim() || "");  // 退社時間
-                rowData.push(cols[9]?.innerText.trim() || "");  // 勤務開始
-                rowData.push(cols[10]?.innerText.trim() || ""); // 勤務終了
-                rowData.push(cols[12]?.innerText.trim() || ""); // 休憩時間
-                rowData.push(cols[13]?.innerText.trim() || ""); // 残業時間
-                rowData.push(cols[15]?.innerText.trim() || ""); // 控除時間
-                rowData.push(cols[16]?.innerText.trim() || ""); // 勤務合計
-                rowData.push(cols[18]?.innerText.trim() || ""); // 出社状況
-
-                csvContent.push(rowData.join(","));
-            }
-        });
-
-        return csvContent.join("\n");
-    }
-
-    // CSVダウンロードボタンを追加
-    function addDownloadButton() {
-        let button = document.createElement("button");
-        button.innerText = "CSV出力";
-        button.style.margin = "10px";
-        button.style.padding = "5px 10px";
-        button.style.fontSize = "14px";
-        button.style.cursor = "pointer";
-
-        button.onclick = function() {
-            let csvData = tableToCSV();
-            if (csvData) {
-                downloadCSV(csvData, "kintai_data.csv");
-            } else {
-                alert("勤怠データが見つかりませんでした。");
-            }
-        };
-
-        // ボタンをページのアクションボックスに追加
-        let actionBox = document.querySelector(".actionBox__RightBox");
-        if (actionBox) {
-            actionBox.appendChild(button);
-        }
-    }
-
-    // ページ読み込み後に実行
-    window.addEventListener("load", addDownloadButton);
+  // ページ読み込み後に実行
+  window.addEventListener('load', addDownloadButton);
 })();
