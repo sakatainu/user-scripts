@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         勤怠データをCSV出力
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
+// @version      1.0.5
 // @description  勤怠・工数のデータをCSVとして出力する
 // @author       You
 // @match        https://kintai.miteras.jp/PXT_PTCS/work-condition*
@@ -46,7 +46,7 @@
     let csvContent = [];
 
     // 指定のヘッダー
-    let headers = ['日付', '出勤', '勤務開始時間', '勤務終了時間', '休憩時間', '勤務合計'];
+    let headers = ['日付', '勤務開始時間', '勤務終了時間', '休憩時間', '勤務合計'];
     csvContent.push(headers.join(','));
 
     // 各行のデータを取得
@@ -56,7 +56,6 @@
       if (cols.length > 0) {
         let rowData = [];
         rowData.push(formatDate(cols[1]?.innerText.trim() || '')); // 日付
-        rowData.push(formatTime(cols[7]?.innerText.trim() || '')); // 出勤
         rowData.push(formatTime(cols[9]?.innerText.trim() || '')); // 勤務開始時間
         rowData.push(formatTime(cols[10]?.innerText.trim() || '')); // 勤務終了時間
         rowData.push(formatTime(cols[12]?.innerText.trim() || '')); // 休憩時間
