@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         E-timecard 勤務時間表示
 // @namespace    http://tampermonkey.net/
-// @version      2.2.0
+// @version      3.0.0
 // @description  try to take over the world!
 // @author       You
-// @updateURL    https://github.com/sakatainu/etimecard-addon/raw/master/main.user.js
-// @downloadURL  https://github.com/sakatainu/etimecard-addon/raw/master/main.user.js
+// @updateURL    https://github.com/sakatainu/user-scripts/raw/refs/heads/main/et-table-addon.user.js
+// @downloadURL  https://github.com/sakatainu/user-scripts/raw/refs/heads/main/et-table-addon.user.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.8/dayjs.min.js
 // @match        https://e-timecard.ne.jp/*
 // @grant        none

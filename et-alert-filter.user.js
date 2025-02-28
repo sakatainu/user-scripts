@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         E-timecard alert抑止
 // @namespace    http://tampermonkey.net/
-// @version      0.0.1
+// @version      1.0.0
 // @description  try to take over the world!
 // @author       You
 // @match        https://e-timecard.ne.jp/s/*
 // @grant        none
+// @updateURL    https://github.com/sakatainu/user-scripts/raw/refs/heads/main/et-alert-filter.user.js
+// @downloadURL  https://github.com/sakatainu/user-scripts/raw/refs/heads/main/et-alert-filter.user.js
 // ==/UserScript==
 
 (() => {
